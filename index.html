@@ -84,14 +84,14 @@
     transition:transform .18s cubic-bezier(.34,1.56,.64,1)}
   .box:active:after{transform:rotate(45deg) scale(1)}
   .txt{flex:1;word-break:break-word;font-size:1rem}
-  .mini{flex:0 0 auto;display:flex;gap:6px;align-items:center;opacity:.5;transition:.2s}
+  .mini{flex:0 0 auto;display:flex;gap:6px;align-items:center;opacity:.55;transition:.2s}
   li:hover .mini{opacity:1}
   button.act{background:none;border:1px solid var(--line);color:var(--muted);
-    border-radius:20px;padding:4px 11px;font-size:.76rem;cursor:pointer;transition:.16s;font-family:var(--sans)}
+    border-radius:20px;padding:4px 11px;font-size:.76rem;cursor:pointer;transition:.16s;font-family:var(--sans);white-space:nowrap}
   button.act:hover{border-color:var(--accent);color:var(--ink);background:var(--bg2)}
-  .x{background:none;border:none;color:var(--faint);cursor:pointer;font-size:1.05rem;
-    line-height:1;padding:2px 4px;transition:.16s}
-  .x:hover{color:var(--warn)}
+  .dotbtn{background:none;border:none;color:var(--faint);cursor:pointer;font-size:1.15rem;
+    line-height:1;padding:0 6px;transition:.16s}
+  .dotbtn:hover{color:var(--gold)}
 
   .addrow{display:flex;gap:9px;margin-top:14px}
   input[type=text],input[type=email],input[type=password]{flex:1;width:100%;background:var(--bg2);border:1px solid var(--line);
@@ -113,9 +113,11 @@
 
   .hero{background:linear-gradient(180deg,var(--panel2),var(--panel));border-color:#34342c}
   .hero h2{color:var(--gold)}
-  .project{display:flex;align-items:center;gap:12px}
-  .project .name{font-family:var(--serif);font-size:1.4rem;font-weight:600;flex:1;line-height:1.2}
+  .project{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .project .name{font-family:var(--serif);font-size:1.4rem;font-weight:600;flex:1;line-height:1.2;min-width:140px}
   .nostar{color:var(--faint);font-family:var(--serif);font-style:italic;font-size:1.05rem}
+  .steplabel{color:var(--muted);font-size:.68rem;text-transform:uppercase;letter-spacing:.12em;margin:16px 0 2px;font-weight:700}
+  .steps{margin:0;padding:0;list-style:none}
   .parked{margin-top:14px;display:flex;flex-wrap:wrap;gap:8px}
   .chip{background:var(--bg);border:1px solid var(--line);color:var(--muted);
     border-radius:22px;padding:5px 8px 5px 13px;font-size:.83rem;display:flex;gap:8px;align-items:center}
@@ -128,13 +130,14 @@
   .done-li{display:flex;gap:11px;align-items:center;padding:7px 0}
   .done-li .tick{color:var(--done);font-size:.9rem;flex:0 0 auto}
   .done-li .txt{color:var(--muted);font-size:.94rem}
+  .done-li .mini{opacity:.4}
   .failing .txt{color:var(--muted)}
   .failing .dash{flex:0 0 16px;color:var(--faint);text-align:center}
 
   .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(90px);
     background:var(--accent);color:var(--panel);padding:13px 20px;border-radius:26px;
     font-size:.9rem;opacity:0;transition:.3s cubic-bezier(.34,1.4,.64,1);
-    max-width:88%;text-align:center;z-index:40;box-shadow:var(--shadow);font-weight:500}
+    max-width:88%;text-align:center;z-index:50;box-shadow:var(--shadow);font-weight:500}
   .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
 
   footer{text-align:center;color:var(--faint);margin-top:30px;font-family:var(--serif)}
@@ -160,14 +163,23 @@
   .sepdot{color:var(--faint);margin:0 7px}
 
   .modalcard{max-width:460px;width:100%;background:var(--panel);border:1px solid var(--line);
-    border-radius:18px;padding:26px 24px;box-shadow:var(--shadow)}
-  .rtitle{font-family:var(--serif);font-size:1.7rem;margin:0 0 4px;font-weight:600}
+    border-radius:18px;padding:26px 24px;box-shadow:var(--shadow);max-height:84vh;overflow:auto}
+  .rtitle{font-family:var(--serif);font-size:1.6rem;margin:0 0 4px;font-weight:600}
   .rsub{color:var(--muted);margin:0 0 16px;font-size:.92rem}
   .rrow{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--line2)}
   .rrow:last-of-type{border-bottom:none}
   .rtxt{flex:1}
   .rrow.drop .rtxt{color:var(--faint);text-decoration:line-through}
   #ritualStart{margin-top:20px;width:100%}
+  .choice{display:flex;flex-direction:column;gap:9px;margin-top:6px}
+  .choicebtn{background:var(--bg2);border:1px solid var(--line);color:var(--ink);
+    border-radius:12px;padding:12px 14px;font-size:.96rem;cursor:pointer;font-family:var(--sans);text-align:left;transition:.16s}
+  .choicebtn:hover{border-color:var(--gold);color:var(--gold)}
+  .sortitem{font-family:var(--serif);font-size:1.35rem;line-height:1.3;margin:4px 0 16px}
+  .sortmeta{color:var(--muted);font-size:.85rem;margin-top:16px;text-align:center}
+  textarea#dumpText{width:100%;min-height:170px;background:var(--bg2);border:1px solid var(--line);
+    border-radius:12px;padding:12px 14px;color:var(--ink);font-family:var(--sans);font-size:.97rem;outline:none;resize:vertical}
+  textarea#dumpText:focus{border-color:var(--gold)}
 
   .focusinner{text-align:center;max-width:640px;width:100%}
   .focuslabel{color:var(--gold);letter-spacing:.22em;text-transform:uppercase;font-size:.78rem;margin-bottom:20px}
@@ -199,10 +211,39 @@
 
 <div class="modal hidden" id="ritual">
   <div class="modalcard">
-    <h2 class="rtitle" id="ritualTitle">Good morning</h2>
+    <h2 class="rtitle">Good morning</h2>
     <p class="rsub" id="ritualSub"></p>
     <div id="ritualList"></div>
     <button class="gatebtn" id="ritualStart">Start the day</button>
+  </div>
+</div>
+
+<div class="modal hidden" id="dump">
+  <div class="modalcard">
+    <h2 class="rtitle">Brain dump</h2>
+    <p class="rsub">One thing per line. Get it all out — you'll sort it later.</p>
+    <textarea id="dumpText" placeholder="Everything on your mind..."></textarea>
+    <button class="gatebtn" id="dumpAdd" style="margin-top:14px;width:100%">Add to backlog</button>
+    <div style="text-align:center"><button class="linkbtn" id="dumpCancel" style="margin-top:12px">Cancel</button></div>
+  </div>
+</div>
+
+<div class="modal hidden" id="sort">
+  <div class="modalcard">
+    <h2 class="rtitle">Sort your backlog</h2>
+    <p class="rsub">Decide where this belongs — one at a time.</p>
+    <div class="sortitem" id="sortText"></div>
+    <div class="choice" id="sortOpts"></div>
+    <div class="sortmeta" id="sortMeta"></div>
+    <div style="text-align:center"><button class="linkbtn" id="sortExit" style="margin-top:14px">Done sorting</button></div>
+  </div>
+</div>
+
+<div class="modal hidden" id="move">
+  <div class="modalcard">
+    <h2 class="rtitle" id="moveTitle">Move</h2>
+    <div class="choice" id="moveOpts"></div>
+    <div style="text-align:center"><button class="linkbtn" id="moveCancel" style="margin-top:16px">Cancel</button></div>
   </div>
 </div>
 
@@ -234,6 +275,11 @@
     <section class="card hero">
       <h2>The one project <span class="pill" id="parkPill"></span></h2>
       <div class="project" id="projWrap"></div>
+      <div id="projSteps"></div>
+      <div class="addrow" id="projStepRow">
+        <input type="text" id="projStepInput" placeholder="Add a next step..." maxlength="120">
+        <button class="add" id="projStepAdd" aria-label="Add step">+</button>
+      </div>
       <div class="parked" id="parked"></div>
       <div class="addrow">
         <input type="text" id="projInput" placeholder="Park a future project..." maxlength="80">
@@ -258,7 +304,13 @@
 
     <div class="col col-side">
     <section class="card">
-      <h2>Open backlog <span class="pill" id="openPill"></span></h2>
+      <h2>Open backlog
+        <span class="h2right">
+          <button class="ghost" id="dumpBtn">Dump</button>
+          <button class="ghost" id="sortBtn">Sort</button>
+          <span class="pill" id="openPill"></span>
+        </span>
+      </h2>
       <div class="cap" id="notDoing"></div>
       <ul id="open"></ul>
       <div class="addrow">
@@ -319,8 +371,17 @@ if (CONFIG.SUPABASE_URL && CONFIG.SUPABASE_ANON_KEY &&
   catch(e){ sb = null; }
 }
 
+function $(id){ return document.getElementById(id); }
+function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,6); }
+function todayStr(){ return new Date().toDateString(); }
+function sameDay(ts, dStr){ return new Date(ts).toDateString() === dStr; }
+
 var user = null;
 function cacheKey(){ return user ? BASEKEY + "." + user.id : BASEKEY; }
+function normProj(p){
+  if(!p || !p.name) return null;
+  return { id:p.id||uid(), name:p.name, steps:Array.isArray(p.steps)?p.steps:[] };
+}
 function normalize(o){
   o = o || {};
   return {
@@ -328,8 +389,8 @@ function normalize(o){
     open:    Array.isArray(o.open)    ? o.open    : [],
     failing: Array.isArray(o.failing) ? o.failing : [],
     done:    Array.isArray(o.done)    ? o.done    : [],
-    project: o.project || null,
-    parked:  Array.isArray(o.parked)  ? o.parked  : [],
+    project: normProj(o.project),
+    parked:  Array.isArray(o.parked)  ? o.parked.map(normProj).filter(Boolean) : [],
     lastDay: typeof o.lastDay === "string" ? o.lastDay : null
   };
 }
@@ -339,10 +400,6 @@ function loadLocal(){
 }
 var s = loadLocal();
 
-function $(id){ return document.getElementById(id); }
-function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,6); }
-function todayStr(){ return new Date().toDateString(); }
-function sameDay(ts, dStr){ return new Date(ts).toDateString() === dStr; }
 function saveLocal(){ try{ localStorage.setItem(cacheKey(), JSON.stringify(s)); }catch(e){} }
 function save(){ saveLocal(); if(sb && user) schedulePush(); }
 
@@ -397,6 +454,100 @@ function renderAccount(){
 function onLogin(u){ user=u; s=loadLocal(); hideGate(); renderAccount(); pullRemote(); }
 function onLogout(){ user=null; s=loadLocal(); renderAccount(); render(); checkDay(); showGate(); }
 
+/* ---------- universal movement ---------- */
+function listRef(name){
+  if(name==='closed') return s.closed;
+  if(name==='open') return s.open;
+  if(name==='failing') return s.failing;
+  if(name==='done') return s.done;
+  if(name==='pstep') return s.project ? s.project.steps : [];
+  return [];
+}
+function findItem(name,id){ return listRef(name).find(function(x){ return x.id===id; }); }
+function takeFrom(name,id){
+  var a=listRef(name);
+  for(var i=0;i<a.length;i++){ if(a[i].id===id){ return a.splice(i,1)[0]; } }
+  return null;
+}
+function moveItem(fromName, id, dest){
+  if(dest==='today' && s.closed.length>=CAP){ toast("Today is full (10). Finish or drop one first."); return false; }
+  if(dest==='project' && !s.project){ toast("No active project to attach to."); return false; }
+  var it=takeFrom(fromName,id); if(!it) return false;
+  if(dest==='today') s.closed.push({id:it.id,text:it.text});
+  else if(dest==='backlog') s.open.push({id:it.id,text:it.text});
+  else if(dest==='failing') s.failing.push({id:it.id,text:it.text});
+  else if(dest==='project') s.project.steps.push({id:it.id,text:it.text});
+  else if(dest==='done') s.done.push({id:it.id,text:it.text,ts:Date.now()});
+  /* dest==='delete' -> simply dropped */
+  save();
+  return true;
+}
+function destFor(name){
+  var P = s.project ? [{label:"Add to the project",dest:"project"}] : [];
+  if(name==='closed') return [{label:"Back to backlog",dest:"backlog"}].concat(P,[{label:"Failing at",dest:"failing"},{label:"Mark done",dest:"done"},{label:"Delete",dest:"delete"}]);
+  if(name==='open') return [{label:"Do it today",dest:"today"}].concat(P,[{label:"Failing at",dest:"failing"},{label:"Mark done",dest:"done"},{label:"Delete",dest:"delete"}]);
+  if(name==='failing') return [{label:"Back to backlog",dest:"backlog"},{label:"Do it today",dest:"today"},{label:"Delete",dest:"delete"}];
+  if(name==='pstep') return [{label:"Do it today",dest:"today"},{label:"Move to backlog",dest:"backlog"},{label:"Delete",dest:"delete"}];
+  if(name==='done') return [{label:"Restore to backlog",dest:"backlog"},{label:"Delete",dest:"delete"}];
+  return [{label:"Delete",dest:"delete"}];
+}
+function openMove(fromName, id){
+  var it=findItem(fromName,id); if(!it) return;
+  $("moveTitle").textContent = 'Move "' + it.text + '" to:';
+  var box=$("moveOpts"); box.innerHTML="";
+  destFor(fromName).forEach(function(o){
+    var b=document.createElement("button"); b.className="choicebtn"; b.textContent=o.label;
+    b.onclick=function(){ if(moveItem(fromName,id,o.dest)){ render(); } closeMove(); };
+    box.append(b);
+  });
+  $("move").classList.remove("hidden");
+}
+function closeMove(){ $("move").classList.add("hidden"); }
+
+/* ---------- brain dump ---------- */
+function openDump(){ $("dumpText").value=""; $("dump").classList.remove("hidden"); }
+function submitDump(){
+  var lines=($("dumpText").value||"").split("\n"); var n=0;
+  lines.forEach(function(l){ if(l.trim()){ s.open.push({id:uid(),text:l.trim()}); n++; } });
+  if(n){ save(); render(); }
+  $("dump").classList.add("hidden");
+  if(n) toast("Added "+n+" to the backlog.");
+}
+
+/* ---------- sort / triage ---------- */
+var sortQueue=[], sortIdx=0;
+function openSort(){
+  sortQueue = s.open.map(function(i){ return i.id; });
+  sortIdx=0;
+  if(!sortQueue.length){ toast("Backlog is empty — nothing to sort."); return; }
+  sortRender(); $("sort").classList.remove("hidden");
+}
+function sortRender(){
+  while(sortIdx<sortQueue.length && !findItem('open',sortQueue[sortIdx])) sortIdx++;
+  if(sortIdx>=sortQueue.length){ $("sort").classList.add("hidden"); toast("Backlog sorted."); return; }
+  var it=findItem('open',sortQueue[sortIdx]);
+  $("sortText").textContent=it.text;
+  $("sortMeta").textContent=(sortIdx+1)+" of "+sortQueue.length;
+  var box=$("sortOpts"); box.innerHTML="";
+  var opts=[{label:"Do it today",dest:"today"}];
+  if(s.project) opts.push({label:"Add to the project",dest:"project"});
+  opts.push({label:"Fail at it, on purpose",dest:"failing"});
+  opts.push({label:"Keep in backlog",dest:"keep"});
+  opts.push({label:"Trash it",dest:"delete"});
+  opts.forEach(function(o){
+    var b=document.createElement("button"); b.className="choicebtn"; b.textContent=o.label;
+    b.onclick=function(){ sortAct(o.dest); };
+    box.append(b);
+  });
+}
+function sortAct(dest){
+  var id=sortQueue[sortIdx];
+  if(dest==='keep'){ sortIdx++; sortRender(); return; }
+  moveItem('open', id, dest); render();
+  sortIdx++; sortRender();
+}
+function exitSort(){ $("sort").classList.add("hidden"); }
+
 /* ---------- morning re-commit ritual ---------- */
 var dropSet = {};
 function checkDay(){
@@ -404,9 +555,10 @@ function checkDay(){
   if(!s.lastDay){ s.lastDay=today; save(); return; }
   if(s.lastDay!==today){
     if(s.closed.length>0){ showRitual(s.lastDay); }
-    else { s.lastDay=today; save(); }
+    else { s.lastDay=today; save(); maybeSort(); }
   }
 }
+function maybeSort(){ if(s.open.length>0){ openSort(); } }
 function showRitual(prevDay){
   var finished = s.done.filter(function(d){ return sameDay(d.ts, prevDay); }).length;
   dropSet = {};
@@ -429,14 +581,13 @@ function showRitual(prevDay){
 }
 function startDay(){
   var keep=[];
-  s.closed.forEach(function(it){
-    if(dropSet[it.id]) s.open.push(it); else keep.push(it);
-  });
+  s.closed.forEach(function(it){ if(dropSet[it.id]) s.open.push(it); else keep.push(it); });
   s.closed=keep;
   s.lastDay=todayStr();
   save();
   $("ritual").classList.add("hidden");
   render();
+  maybeSort();
 }
 
 /* ---------- focus mode ---------- */
@@ -449,15 +600,13 @@ function renderFocus(){
   if(!s.closed.length){ exitFocus(); return; }
   $("focusText").textContent = s.closed[0].text;
   var left = s.closed.length - 1;
-  $("focusMeta").textContent = s.closed.length + " committed · " +
-    (left>0 ? left + " after this" : "last one");
+  $("focusMeta").textContent = s.closed.length + " committed · " + (left>0 ? left + " after this" : "last one");
 }
 function focusDone(){
   if(!s.closed.length) return;
   var it=s.closed[0];
-  logDone(it.text);
-  s.closed = s.closed.filter(function(x){ return x.id!==it.id; });
-  save(); render();
+  moveItem('closed', it.id, 'done');
+  render();
   if(s.closed.length){ renderFocus(); }
   else { exitFocus(); toast("Closed list clear. Rest, or recommit."); }
 }
@@ -486,18 +635,44 @@ function renderDots(){
   }
   prevClosed=s.closed.length;
 }
-function render(){
+function moveBtn(fromName, id){
+  var mv=document.createElement("button"); mv.className="dotbtn"; mv.innerHTML="&#8943;"; mv.title="Move";
+  mv.onclick=function(){ openMove(fromName, id); };
+  return mv;
+}
+function renderProject(){
   var pw=$("projWrap");
-  if(pw){
-    if(s.project){
-      pw.innerHTML="";
-      var name=document.createElement("div"); name.className="name"; name.textContent=s.project.name;
-      var done=document.createElement("button"); done.className="act"; done.textContent="Shipped ✓";
-      done.onclick=function(){ logDone("Project · "+s.project.name); s.project=null; save(); render(); };
-      var park=document.createElement("button"); park.className="act"; park.textContent="Park";
-      park.onclick=function(){ s.parked.unshift(s.project); s.project=null; save(); render(); };
-      pw.append(name,done,park);
-    } else { pw.innerHTML='<div class="nostar">Nothing active. One at a time &mdash; choose below.</div>'; }
+  if(s.project){
+    pw.innerHTML="";
+    var name=document.createElement("div"); name.className="name"; name.textContent=s.project.name;
+    var ship=document.createElement("button"); ship.className="act"; ship.textContent="Shipped ✓";
+    ship.onclick=function(){ logDoneText("Project · "+s.project.name); s.project=null; save(); render(); };
+    var park=document.createElement("button"); park.className="act"; park.textContent="Park";
+    park.onclick=function(){ s.parked.unshift(s.project); s.project=null; save(); render(); };
+    pw.append(name,ship,park);
+
+    var sbx=$("projSteps"); sbx.innerHTML="";
+    var lab=document.createElement("div"); lab.className="steplabel"; lab.textContent="Next steps"; sbx.append(lab);
+    if(!s.project.steps.length){
+      var e=document.createElement("div"); e.className="empty"; e.textContent="No steps yet. What's the next action?"; sbx.append(e);
+    } else {
+      var ul=document.createElement("ul"); ul.className="steps";
+      s.project.steps.forEach(function(st){
+        var li=document.createElement("li");
+        var t=document.createElement("span"); t.className="txt"; t.textContent=st.text;
+        var mini=document.createElement("div"); mini.className="mini";
+        var pull=document.createElement("button"); pull.className="act"; pull.textContent="→ Today";
+        pull.onclick=function(){ if(moveItem('pstep', st.id, 'today')){ render(); } };
+        mini.append(pull, moveBtn('pstep', st.id));
+        li.append(t,mini); ul.append(li);
+      });
+      sbx.append(ul);
+    }
+    $("projStepRow").style.display="flex";
+  } else {
+    pw.innerHTML='<div class="nostar">Nothing active. One at a time &mdash; pick or name one below.</div>';
+    $("projSteps").innerHTML="";
+    $("projStepRow").style.display="none";
   }
   var ppill=$("parkPill"); if(ppill) ppill.textContent = s.parked.length ? s.parked.length+" parked" : "";
   var pk=$("parked");
@@ -512,6 +687,10 @@ function render(){
       c.append(label,mk,rm); pk.append(c);
     });
   }
+}
+function render(){
+  renderProject();
+
   var cp=$("closedPill");
   if(cp){ cp.textContent=s.closed.length+" / "+CAP; cp.classList.toggle("warn", s.closed.length>=CAP); }
   var ca=$("closedAdd"); if(ca) ca.disabled = s.closed.length>=CAP;
@@ -523,7 +702,7 @@ function render(){
   if(nd) nd.textContent = s.open.length>0
     ? (s.open.length + " thing" + (s.open.length===1?"":"s") + " you're choosing not to do today")
     : "";
-  listInto("open", s.open, {promote:true, list:"open"});
+  listInto("open", s.open, {quickToday:true, list:"open"});
 
   var fp=$("failPill"); if(fp) fp.textContent = s.failing.length ? s.failing.length : "";
   listInto("failing", s.failing, {list:"failing", failing:true});
@@ -544,7 +723,8 @@ function render(){
         var row=document.createElement("div"); row.className="done-li";
         var tk=document.createElement("span"); tk.className="tick"; tk.textContent="✓";
         var t=document.createElement("span"); t.className="txt"; t.textContent=d.text;
-        row.append(tk,t); dl.append(row);
+        var mini=document.createElement("div"); mini.className="mini"; mini.append(moveBtn('done', d.id));
+        row.append(tk,t,mini); dl.append(row);
       });
     }
   }
@@ -565,7 +745,7 @@ function listInto(id, arr, opt){
       b.onclick=function(){
         li.classList.add("done-anim");
         setTimeout(function(){
-          logDone(item.text); remove(opt.list,item.id); render();
+          moveItem(opt.list,item.id,'done'); render();
           if(opt.list==="closed" && s.closed.length===0){ toast("Closed list clear. Rest, or recommit."); }
         }, 200);
       };
@@ -574,23 +754,16 @@ function listInto(id, arr, opt){
     if(opt.failing){ var dash=document.createElement("span"); dash.className="dash"; dash.textContent="—"; li.append(dash); }
     var t=document.createElement("span"); t.className="txt"; t.textContent=item.text; li.append(t);
     var mini=document.createElement("div"); mini.className="mini";
-    if(opt.promote){
-      var p=document.createElement("button"); p.className="act"; p.textContent="↑ commit";
-      p.onclick=function(){ promote(item.id); }; mini.append(p);
+    if(opt.quickToday){
+      var q=document.createElement("button"); q.className="act"; q.textContent="→ Today";
+      q.onclick=function(){ if(moveItem('open',item.id,'today')) render(); }; mini.append(q);
     }
-    var x=document.createElement("button"); x.className="x"; x.textContent="✕"; x.title="Delete";
-    x.onclick=function(){ remove(opt.list,item.id); render(); };
-    mini.append(x); li.append(mini); ul.append(li);
+    mini.append(moveBtn(opt.list, item.id));
+    li.append(mini); ul.append(li);
   });
 }
-function logDone(text){ s.done.push({id:uid(),text:text,ts:Date.now()}); }
-function remove(list,id){ s[list]=s[list].filter(function(i){ return i.id!==id; }); }
-function add(list,text){ if(!text.trim())return; s[list].push({id:uid(),text:text.trim()}); }
-function promote(id){
-  if(s.closed.length>=CAP){ toast("Closed list is full (10). Finish or drop one first."); return; }
-  var item=s.open.find(function(i){ return i.id===id; }); if(!item)return;
-  s.open=s.open.filter(function(i){ return i.id!==id; }); s.closed.push(item); render();
-}
+function logDoneText(text){ s.done.push({id:uid(),text:text,ts:Date.now()}); }
+function add(list,text){ if(!text.trim())return; listRef(list).push({id:uid(),text:text.trim()}); }
 function activate(i){
   var p=s.parked[i];
   if(s.project){ if(!confirm('Park "'+s.project.name+'" and make "'+p.name+'" active? Only one project runs at a time.')) return;
@@ -609,11 +782,15 @@ bind("closedInput","closedAdd",function(v){
 });
 bind("openInput","openAdd",function(v){ add("open",v); render(); });
 bind("failInput","failAdd",function(v){ add("failing",v); render(); });
+bind("projStepInput","projStepAdd",function(v){
+  if(!s.project){ toast("Activate a project first."); return; }
+  if(!v.trim()) return; s.project.steps.push({id:uid(),text:v.trim()}); save(); render();
+});
 bind("projInput","projAdd",function(v){
   if(!v.trim())return;
-  var p={id:uid(),name:v.trim()};
+  var p={id:uid(),name:v.trim(),steps:[]};
   if(!s.project){ s.project=p; } else { s.parked.unshift(p); }
-  $("projInput").value=""; save(); render();
+  save(); render();
 });
 
 /* feature wiring */
@@ -621,6 +798,12 @@ if($("focusBtn")) $("focusBtn").onclick=enterFocus;
 if($("focusDone")) $("focusDone").onclick=focusDone;
 if($("focusExit")) $("focusExit").onclick=exitFocus;
 if($("ritualStart")) $("ritualStart").onclick=startDay;
+if($("dumpBtn")) $("dumpBtn").onclick=openDump;
+if($("dumpAdd")) $("dumpAdd").onclick=submitDump;
+if($("dumpCancel")) $("dumpCancel").onclick=function(){ $("dump").classList.add("hidden"); };
+if($("sortBtn")) $("sortBtn").onclick=openSort;
+if($("sortExit")) $("sortExit").onclick=exitSort;
+if($("moveCancel")) $("moveCancel").onclick=closeMove;
 
 /* ---------- gate handlers (email + password) ---------- */
 var authMode = "signin";
