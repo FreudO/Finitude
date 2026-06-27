@@ -138,6 +138,7 @@
   .gatemsg{font-size:.86rem;color:var(--muted);min-height:20px;margin-top:4px}
   .gatemsg.ok{color:var(--done)} .gatemsg.err{color:var(--warn)}
   .gatefoot{margin-top:18px}
+  .sepdot{color:var(--faint);margin:0 7px}
 </style>
 </head>
 <body>
@@ -145,13 +146,18 @@
 <div class="gate hidden" id="gate">
   <div class="gatecard">
     <h1>Finitude</h1>
-    <p>Sign in to sync across your devices.</p>
+    <p id="gateSub">Sign in to sync across your devices.</p>
     <div class="gateform">
       <input type="email" id="gateEmail" placeholder="you@email.com" autocomplete="email">
-      <button class="gatebtn" id="gateSend">Email me a sign-in link</button>
+      <input type="password" id="gatePass" placeholder="Password" autocomplete="current-password">
+      <button class="gatebtn" id="gateGo">Sign in</button>
       <div class="gatemsg" id="gateMsg"></div>
     </div>
-    <div class="gatefoot"><button class="linkbtn" id="gateSkip">Use this device only</button></div>
+    <div class="gatefoot">
+      <button class="linkbtn" id="gateToggle">Create an account</button>
+      <span class="sepdot">·</span>
+      <button class="linkbtn" id="gateSkip">Use this device only</button>
+    </div>
   </div>
 </div>
 
@@ -233,7 +239,9 @@ var blank = {closed:[], open:[], failing:[], done:[], project:null, parked:[]};
 var sb = null;
 if (CONFIG.SUPABASE_URL && CONFIG.SUPABASE_ANON_KEY &&
     typeof window !== "undefined" && window.supabase) {
-  try { sb = window.supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY); }
+  try { sb = window.supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY, {
+    auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false }
+  }); }
   catch(e){ sb = null; }
 }
 
@@ -453,20 +461,42 @@ bind("projInput","projAdd",function(v){
   $("projInput").value=""; save(); render();
 });
 
-/* ---------- gate handlers ---------- */
+/* ---------- gate handlers (email + password) ---------- */
+var authMode = "signin";
 (function(){
-  var send=$("gateSend"), skip=$("gateSkip"), email=$("gateEmail"), msg=$("gateMsg");
-  if(send) send.onclick=function(){
-    if(!sb){ return; }
-    var addr=(email.value||"").trim();
-    if(!/.+@.+\..+/.test(addr)){ msg.className="gatemsg err"; msg.textContent="Enter a valid email."; return; }
-    msg.className="gatemsg"; msg.textContent="Sending…";
-    sb.auth.signInWithOtp({ email:addr, options:{ emailRedirectTo: location.href } })
-      .then(function(r){
-        if(r && r.error){ msg.className="gatemsg err"; msg.textContent=r.error.message; }
-        else { msg.className="gatemsg ok"; msg.textContent="Check your email for the sign-in link."; }
-      });
-  };
+  var go=$("gateGo"), toggle=$("gateToggle"), skip=$("gateSkip"),
+      email=$("gateEmail"), pass=$("gatePass"), msg=$("gateMsg"), sub=$("gateSub");
+  function setMsg(cls,text){ if(msg){ msg.className="gatemsg"+(cls?" "+cls:""); msg.textContent=text; } }
+  function setMode(m){
+    authMode=m;
+    if(go) go.textContent = (m==="signin") ? "Sign in" : "Create account";
+    if(toggle) toggle.textContent = (m==="signin") ? "Create an account" : "Have an account? Sign in";
+    if(sub) sub.textContent = (m==="signin") ? "Sign in to sync across your devices." : "Create an account to sync across your devices.";
+    if(pass) pass.setAttribute("autocomplete", m==="signin" ? "current-password" : "new-password");
+    setMsg("","");
+  }
+  function submit(){
+    if(!sb) return;
+    var addr=(email.value||"").trim(), pw=(pass.value||"");
+    if(!/.+@.+\..+/.test(addr)){ setMsg("err","Enter a valid email."); return; }
+    if(pw.length<6){ setMsg("err","Password must be at least 6 characters."); return; }
+    setMsg("", authMode==="signin" ? "Signing in…" : "Creating account…");
+    var req = (authMode==="signin")
+      ? sb.auth.signInWithPassword({ email:addr, password:pw })
+      : sb.auth.signUp({ email:addr, password:pw });
+    req.then(function(r){
+      if(r && r.error){ setMsg("err", r.error.message); return; }
+      if(authMode==="signup" && r && r.data && !r.data.session){
+        setMode("signin");
+        setMsg("ok","Account created. Check your email to confirm, then sign in.");
+      }
+      /* otherwise onAuthStateChange handles the signed-in state */
+    });
+  }
+  if(go) go.onclick=submit;
+  if(pass) pass.addEventListener("keydown", function(e){ if(e.key==="Enter") submit(); });
+  if(email) email.addEventListener("keydown", function(e){ if(e.key==="Enter") submit(); });
+  if(toggle) toggle.onclick=function(){ setMode(authMode==="signin" ? "signup" : "signin"); };
   if(skip) skip.onclick=function(){ hideGate(); renderAccount(); render(); };
 })();
 
