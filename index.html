@@ -101,6 +101,13 @@
     pointer-events:none;transition:.25s;box-shadow:var(--shadow)}
   #trash.show{transform:translateX(-50%) translateY(0);opacity:1;pointer-events:auto}
   #trash.on{background:var(--warn);color:var(--panel);border-style:solid}
+  .popover{position:fixed;z-index:60;background:var(--panel);border:1px solid var(--line);
+    border-radius:12px;box-shadow:var(--shadow);padding:6px;min-width:172px;display:none}
+  .popover.show{display:block;animation:slidein .14s ease}
+  .popover button{display:block;width:100%;text-align:left;background:none;border:none;color:var(--ink);
+    font-family:var(--sans);font-size:.9rem;padding:9px 12px;border-radius:8px;cursor:pointer;white-space:nowrap;transition:.12s}
+  .popover button:hover{background:var(--bg2);color:var(--gold)}
+  .popover button.danger:hover{color:var(--warn)}
 
   .addrow{display:flex;gap:9px;margin-top:14px}
   input[type=text],input[type=email],input[type=password]{flex:1;width:100%;background:var(--bg2);border:1px solid var(--line);
@@ -248,13 +255,7 @@
   </div>
 </div>
 
-<div class="modal hidden" id="move">
-  <div class="modalcard">
-    <h2 class="rtitle" id="moveTitle">Move</h2>
-    <div class="choice" id="moveOpts"></div>
-    <div style="text-align:center"><button class="linkbtn" id="moveCancel" style="margin-top:16px">Cancel</button></div>
-  </div>
-</div>
+<div class="popover" id="popover"></div>
 
 <div class="focus hidden" id="focus">
   <div class="focusinner">
@@ -501,18 +502,31 @@ function destFor(name){
   if(name==='done') return [{label:"Restore to backlog",dest:"backlog"},{label:"Delete",dest:"delete"}];
   return [{label:"Delete",dest:"delete"}];
 }
-function openMove(fromName, id){
+var PRIMARY = { closed:"done", open:"today", failing:"backlog", pstep:"today", done:null };
+function openMove(fromName, id, anchor){
   var it=findItem(fromName,id); if(!it) return;
-  $("moveTitle").textContent = 'Move "' + it.text + '" to:';
-  var box=$("moveOpts"); box.innerHTML="";
-  destFor(fromName).forEach(function(o){
-    var b=document.createElement("button"); b.className="choicebtn"; b.textContent=o.label;
-    b.onclick=function(){ if(moveItem(fromName,id,o.dest)){ render(); } closeMove(); };
-    box.append(b);
+  var pop=$("popover"); pop.innerHTML="";
+  destFor(fromName).filter(function(o){ return o.dest!==PRIMARY[fromName]; }).forEach(function(o){
+    var b=document.createElement("button"); b.textContent=o.label;
+    if(o.dest==="delete") b.className="danger";
+    b.onclick=function(ev){ if(ev) ev.stopPropagation(); closeMove(); if(moveItem(fromName,id,o.dest)){ render(); } };
+    pop.append(b);
   });
-  $("move").classList.remove("hidden");
+  pop.classList.add("show");
+  var r=anchor.getBoundingClientRect();
+  var pw=pop.offsetWidth||180, ph=pop.offsetHeight||10;
+  var left=r.right-pw; if(left<8) left=8; if(left+pw>window.innerWidth-8) left=window.innerWidth-pw-8;
+  var top=r.bottom+6; if(top+ph>window.innerHeight-8) top=r.top-ph-6; if(top<8) top=8;
+  pop.style.left=left+"px"; pop.style.top=top+"px";
 }
-function closeMove(){ $("move").classList.add("hidden"); }
+function closeMove(){ var p=$("popover"); if(p) p.classList.remove("show"); }
+document.addEventListener("click", function(e){
+  var p=$("popover"); if(!p || !p.classList.contains("show")) return;
+  if(p.contains && p.contains(e.target)) return;
+  closeMove();
+});
+document.addEventListener("keydown", function(e){ if(e.key==="Escape") closeMove(); });
+window.addEventListener("scroll", closeMove, true);
 
 /* ---------- drag & drop (desktop; menu stays for touch) ---------- */
 var dragData = null;
@@ -688,8 +702,8 @@ function renderDots(){
   prevClosed=s.closed.length;
 }
 function moveBtn(fromName, id){
-  var mv=document.createElement("button"); mv.className="dotbtn"; mv.innerHTML="&#8943;"; mv.title="Move";
-  mv.onclick=function(){ openMove(fromName, id); };
+  var mv=document.createElement("button"); mv.className="dotbtn"; mv.innerHTML="&#8943;"; mv.title="More";
+  mv.onclick=function(ev){ if(ev) ev.stopPropagation(); openMove(fromName, id, mv); };
   return mv;
 }
 function renderProject(){
@@ -810,6 +824,10 @@ function listInto(id, arr, opt){
       var q=document.createElement("button"); q.className="act"; q.textContent="→ Today";
       q.onclick=function(){ if(moveItem('open',item.id,'today')) render(); }; mini.append(q);
     }
+    if(opt.failing){
+      var qb=document.createElement("button"); qb.className="act"; qb.textContent="→ Backlog";
+      qb.onclick=function(){ if(moveItem('failing',item.id,'backlog')) render(); }; mini.append(qb);
+    }
     mini.append(moveBtn(opt.list, item.id));
     li.append(mini); makeDraggable(li, opt.list, item.id); ul.append(li);
   });
@@ -855,7 +873,6 @@ if($("dumpAdd")) $("dumpAdd").onclick=submitDump;
 if($("dumpCancel")) $("dumpCancel").onclick=function(){ $("dump").classList.add("hidden"); };
 if($("sortBtn")) $("sortBtn").onclick=openSort;
 if($("sortExit")) $("sortExit").onclick=exitSort;
-if($("moveCancel")) $("moveCancel").onclick=closeMove;
 
 /* ---------- gate handlers (email + password) ---------- */
 var authMode = "signin";
