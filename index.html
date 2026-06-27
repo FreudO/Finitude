@@ -22,6 +22,7 @@
     padding:env(safe-area-inset-top) env(safe-area-inset-right) calc(40px + env(safe-area-inset-bottom)) env(safe-area-inset-left);
     -webkit-font-smoothing:antialiased;}
   .wrap{max-width:680px;margin:0 auto;padding:0 18px}
+  @media(min-width:860px){ .wrap{max-width:980px} }
 
   header{padding:40px 0 10px;text-align:center}
   h1{font-family:var(--serif);font-weight:600;font-size:2.5rem;margin:0;letter-spacing:-.01em}
@@ -47,7 +48,9 @@
   .meterlabel b{color:var(--ink);font-variant-numeric:tabular-nums}
   .meterlabel.full b{color:var(--warn)}
 
-  main{display:grid;gap:18px;margin-top:14px}
+  main{display:grid;gap:18px;margin-top:14px;grid-template-columns:1fr;align-items:start}
+  .col{display:grid;gap:18px;align-content:start}
+  @media(min-width:860px){ main{grid-template-columns:1.35fr 1fr} }
   .card{background:var(--panel);border:1px solid var(--line);border-radius:18px;
     padding:20px 20px 16px;box-shadow:var(--shadow)}
   .card h2{font-size:.72rem;text-transform:uppercase;letter-spacing:.13em;
@@ -173,12 +176,13 @@
   </div>
 
   <main>
+    <div class="col col-main">
     <section class="card hero">
       <h2>The one project <span class="pill" id="parkPill"></span></h2>
       <div class="project" id="projWrap"></div>
       <div class="parked" id="parked"></div>
       <div class="addrow">
-        <input type="text" id="projInput" placeholder="Name a project to focus on..." maxlength="80">
+        <input type="text" id="projInput" placeholder="Park a future project..." maxlength="80">
         <button class="add" id="projAdd" aria-label="Add project">+</button>
       </div>
     </section>
@@ -187,16 +191,18 @@
       <h2>Today &mdash; closed list <span class="pill" id="closedPill">0 / 10</span></h2>
       <ul id="closed"></ul>
       <div class="addrow">
-        <input type="text" id="closedInput" placeholder="Commit to one thing for today..." maxlength="120">
+        <input type="text" id="closedInput" placeholder="Commit to one thing..." maxlength="120">
         <button class="add" id="closedAdd" aria-label="Add to closed list">+</button>
       </div>
     </section>
+    </div>
 
+    <div class="col col-side">
     <section class="card">
       <h2>Open backlog <span class="pill" id="openPill"></span></h2>
       <ul id="open"></ul>
       <div class="addrow">
-        <input type="text" id="openInput" placeholder="Capture an idea — don't commit yet..." maxlength="120">
+        <input type="text" id="openInput" placeholder="Capture, don't commit..." maxlength="120">
         <button class="add" id="openAdd" aria-label="Add to backlog">+</button>
       </div>
     </section>
@@ -214,6 +220,7 @@
       <h2>Done <span class="pill" id="donePill"></span></h2>
       <div id="doneLog"></div>
     </section>
+    </div>
   </main>
 
   <footer>After Oliver Burkeman, <i>Four Thousand Weeks</i></footer>
@@ -371,7 +378,7 @@ function render(){
   var cp=$("closedPill");
   if(cp){ cp.textContent=s.closed.length+" / "+CAP; cp.classList.toggle("warn", s.closed.length>=CAP); }
   var ca=$("closedAdd"); if(ca) ca.disabled = s.closed.length>=CAP;
-  var ci=$("closedInput"); if(ci) ci.placeholder = s.closed.length>=CAP ? "Full. Finish or drop one first." : "Commit to one thing for today...";
+  var ci=$("closedInput"); if(ci) ci.placeholder = s.closed.length>=CAP ? "Full. Finish or drop one first." : "Commit to one thing...";
   listInto("closed", s.closed, {check:true, list:"closed"});
 
   var op=$("openPill"); if(op) op.textContent = s.open.length ? s.open.length : "";
