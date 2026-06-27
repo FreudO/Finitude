@@ -120,6 +120,8 @@
     -webkit-text-fill-color:var(--ink);
     -webkit-box-shadow:0 0 0 1000px var(--bg2) inset;
     caret-color:var(--ink);transition:background-color 9999s ease-in-out 0s}
+  .editfield{flex:1;min-width:120px;background:var(--bg2);border:1px solid var(--gold);
+    border-radius:8px;padding:6px 10px;color:var(--ink);font-size:1rem;font-family:var(--sans);outline:none}
   .add{background:var(--accent);color:var(--panel);border:none;border-radius:12px;
     width:46px;font-size:1.4rem;cursor:pointer;transition:.16s;flex:0 0 auto}
   .add:hover{opacity:.88}
@@ -283,7 +285,7 @@
   <main>
     <div class="col col-main">
     <section class="card hero" data-drop="project">
-      <h2>The one project <span class="pill" id="parkPill"></span></h2>
+      <h2 title="Your single active project. Work on one big thing at a time and park the rest. Add its next steps below, then send a step to Today to actually do it.">The one project <span class="pill" id="parkPill"></span></h2>
       <div class="project" id="projWrap"></div>
       <div id="projSteps"></div>
       <div class="addrow" id="projStepRow">
@@ -298,10 +300,10 @@
     </section>
 
     <section class="card" data-drop="today">
-      <h2>Today &mdash; closed list
+      <h2 title="What you're committing to do today — hard-capped at 10. The whole point: a few real commitments, not an endless list.">Today &mdash; closed list
         <span class="h2right">
-          <button class="ghost" id="focusBtn">&#9654; Focus</button>
-          <span class="pill" id="closedPill">0 / 10</span>
+          <button class="ghost" id="focusBtn" title="Full-screen on one task at a time. Mark it done to advance to the next.">&#9654; Focus</button>
+          <span class="pill" id="closedPill" title="How many of your 10 slots are committed.">0 / 10</span>
         </span>
       </h2>
       <ul id="closed"></ul>
@@ -314,10 +316,10 @@
 
     <div class="col col-side">
     <section class="card" data-drop="backlog">
-      <h2>Open backlog
+      <h2 title="Everything you might do, captured but not committed to. Park ideas here freely; decide on them later.">Open backlog
         <span class="h2right">
-          <button class="ghost" id="dumpBtn">Dump</button>
-          <button class="ghost" id="sortBtn">Sort</button>
+          <button class="ghost" id="dumpBtn" title="Brain-dump: type everything on your mind, one per line, without deciding.">Dump</button>
+          <button class="ghost" id="sortBtn" title="Go through backlog items one at a time and decide where each belongs.">Sort</button>
           <span class="pill" id="openPill"></span>
         </span>
       </h2>
@@ -330,7 +332,7 @@
     </section>
 
     <section class="card" data-drop="failing">
-      <h2>Failing at &mdash; on purpose <span class="pill" id="failPill"></span></h2>
+      <h2 title="Things you're deliberately choosing NOT to do right now. Naming them on purpose stops them nagging you in the background.">Failing at &mdash; on purpose <span class="pill" id="failPill"></span></h2>
       <ul id="failing"></ul>
       <div class="addrow">
         <input type="text" id="failInput" placeholder="What will you let slide, guilt-free?" maxlength="120">
@@ -339,7 +341,7 @@
     </section>
 
     <section class="card" data-drop="done">
-      <h2>Done <span class="pill" id="donePill"></span></h2>
+      <h2 title="What you've finished — momentum you can see. Focus on what you've completed, not just what's left.">Done <span class="pill" id="donePill"></span></h2>
       <div class="donesum" id="doneSum"></div>
       <div id="doneLog"></div>
     </section>
@@ -506,6 +508,13 @@ var PRIMARY = { closed:"done", open:"today", failing:"backlog", pstep:"today", d
 function openMove(fromName, id, anchor){
   var it=findItem(fromName,id); if(!it) return;
   var pop=$("popover"); pop.innerHTML="";
+  var ed=document.createElement("button"); ed.textContent="Edit text";
+  ed.onclick=function(ev){ if(ev) ev.stopPropagation(); closeMove();
+    var row = anchor.closest ? (anchor.closest("li") || anchor.closest(".done-li")) : null;
+    var sp = row && row.querySelector ? row.querySelector(".txt") : null;
+    if(sp) startEdit(sp, function(v){ applyEdit(fromName,id,v); });
+  };
+  pop.append(ed);
   destFor(fromName).filter(function(o){ return o.dest!==PRIMARY[fromName]; }).forEach(function(o){
     var b=document.createElement("button"); b.textContent=o.label;
     if(o.dest==="delete") b.className="danger";
@@ -527,6 +536,25 @@ document.addEventListener("click", function(e){
 });
 document.addEventListener("keydown", function(e){ if(e.key==="Escape") closeMove(); });
 window.addEventListener("scroll", closeMove, true);
+
+/* ---------- edit text in place ---------- */
+function applyEdit(fromName, id, v){ var it=findItem(fromName,id); if(it){ it.text=v; save(); render(); } }
+function startEdit(span, applyFn){
+  if(!span || !span.parentNode) return;
+  var host = span.closest ? span.closest('[draggable]') : null; if(host) host.setAttribute("draggable","false");
+  var inp=document.createElement("input"); inp.type="text"; inp.value=span.textContent;
+  inp.className="editfield"; inp.maxLength=200;
+  span.parentNode.replaceChild(inp, span); inp.focus(); if(inp.select) inp.select();
+  var committed=false;
+  function finish(commit){ if(committed) return; committed=true; var v=(inp.value||"").trim(); if(commit && v){ applyFn(v); } else { render(); } }
+  inp.addEventListener("keydown", function(ev){ ev.stopPropagation(); if(ev.key==="Enter"){ ev.preventDefault(); finish(true); } else if(ev.key==="Escape"){ finish(false); } });
+  inp.addEventListener("blur", function(){ finish(true); });
+  inp.addEventListener("dragstart", function(ev){ ev.preventDefault(); ev.stopPropagation(); });
+}
+function makeEditable(span, applyFn){
+  span.title="Double-click to edit"; span.style.cursor="text";
+  span.addEventListener("dblclick", function(e){ e.stopPropagation(); startEdit(span, applyFn); });
+}
 
 /* ---------- drag & drop (desktop; menu stays for touch) ---------- */
 var dragData = null;
@@ -711,6 +739,7 @@ function renderProject(){
   if(s.project){
     pw.innerHTML="";
     var name=document.createElement("div"); name.className="name"; name.textContent=s.project.name;
+    makeEditable(name, function(v){ s.project.name=v; save(); render(); });
     var ship=document.createElement("button"); ship.className="act"; ship.textContent="Shipped ✓";
     ship.onclick=function(){ logDoneText("Project · "+s.project.name); s.project=null; save(); render(); };
     var park=document.createElement("button"); park.className="act"; park.textContent="Park";
@@ -726,6 +755,7 @@ function renderProject(){
       s.project.steps.forEach(function(st){
         var li=document.createElement("li");
         var t=document.createElement("span"); t.className="txt"; t.textContent=st.text;
+        (function(stp){ makeEditable(t, function(v){ applyEdit('pstep', stp.id, v); }); })(st);
         var mini=document.createElement("div"); mini.className="mini";
         var pull=document.createElement("button"); pull.className="act"; pull.textContent="→ Today";
         pull.onclick=function(){ if(moveItem('pstep', st.id, 'today')){ render(); } };
@@ -746,6 +776,7 @@ function renderProject(){
     s.parked.forEach(function(p,i){
       var c=document.createElement("span"); c.className="chip";
       var label=document.createElement("span"); label.textContent=p.name;
+      (function(pp){ makeEditable(label, function(v){ pp.name=v; save(); render(); }); })(p);
       var mk=document.createElement("button"); mk.className="go"; mk.textContent="▶"; mk.title="Make active";
       mk.onclick=function(){ activate(i); };
       var rm=document.createElement("button"); rm.textContent="✕"; rm.title="Remove";
@@ -789,6 +820,7 @@ function render(){
         var row=document.createElement("div"); row.className="done-li";
         var tk=document.createElement("span"); tk.className="tick"; tk.textContent="✓";
         var t=document.createElement("span"); t.className="txt"; t.textContent=d.text;
+        (function(dd){ makeEditable(t, function(v){ applyEdit('done', dd.id, v); }); })(d);
         var mini=document.createElement("div"); mini.className="mini"; mini.append(moveBtn('done', d.id));
         row.append(tk,t,mini); makeDraggable(row,'done',d.id); dl.append(row);
       });
@@ -818,7 +850,8 @@ function listInto(id, arr, opt){
       li.append(b);
     }
     if(opt.failing){ var dash=document.createElement("span"); dash.className="dash"; dash.textContent="—"; li.append(dash); }
-    var t=document.createElement("span"); t.className="txt"; t.textContent=item.text; li.append(t);
+    var t=document.createElement("span"); t.className="txt"; t.textContent=item.text;
+    makeEditable(t, function(v){ applyEdit(opt.list, item.id, v); }); li.append(t);
     var mini=document.createElement("div"); mini.className="mini";
     if(opt.quickToday){
       var q=document.createElement("button"); q.className="act"; q.textContent="→ Today";
