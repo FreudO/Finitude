@@ -108,6 +108,12 @@
     font-family:var(--sans);font-size:.9rem;padding:9px 12px;border-radius:8px;cursor:pointer;white-space:nowrap;transition:.12s}
   .popover button:hover{background:var(--bg2);color:var(--gold)}
   .popover button.danger:hover{color:var(--warn)}
+  #tip{position:fixed;z-index:80;max-width:250px;background:var(--panel2);border:1px solid var(--line);
+    color:var(--ink);font-family:var(--sans);font-size:.82rem;line-height:1.45;padding:9px 12px;
+    border-radius:10px;box-shadow:var(--shadow);pointer-events:none;display:none;opacity:0;transition:opacity .14s}
+  #tip.show{opacity:1}
+  [data-tip]{cursor:help}
+  .ghost[data-tip],.pill[data-tip],.txt[data-tip],.name[data-tip]{cursor:inherit}
 
   .addrow{display:flex;gap:9px;margin-top:14px}
   input[type=text],input[type=email],input[type=password]{flex:1;width:100%;background:var(--bg2);border:1px solid var(--line);
@@ -258,6 +264,7 @@
 </div>
 
 <div class="popover" id="popover"></div>
+<div id="tip"></div>
 
 <div class="focus hidden" id="focus">
   <div class="focusinner">
@@ -285,7 +292,7 @@
   <main>
     <div class="col col-main">
     <section class="card hero" data-drop="project">
-      <h2 title="Your single active project. Work on one big thing at a time and park the rest. Add its next steps below, then send a step to Today to actually do it.">The one project <span class="pill" id="parkPill"></span></h2>
+      <h2 data-tip="Your single active project. Work on one big thing at a time and park the rest. Add its next steps below, then send a step to Today to actually do it.">The one project <span class="pill" id="parkPill"></span></h2>
       <div class="project" id="projWrap"></div>
       <div id="projSteps"></div>
       <div class="addrow" id="projStepRow">
@@ -300,10 +307,10 @@
     </section>
 
     <section class="card" data-drop="today">
-      <h2 title="What you're committing to do today — hard-capped at 10. The whole point: a few real commitments, not an endless list.">Today &mdash; closed list
+      <h2 data-tip="What you're committing to do today — hard-capped at 10. The whole point: a few real commitments, not an endless list.">Today &mdash; closed list
         <span class="h2right">
-          <button class="ghost" id="focusBtn" title="Full-screen on one task at a time. Mark it done to advance to the next.">&#9654; Focus</button>
-          <span class="pill" id="closedPill" title="How many of your 10 slots are committed.">0 / 10</span>
+          <button class="ghost" id="focusBtn" data-tip="Full-screen on one task at a time. Mark it done to advance to the next.">&#9654; Focus</button>
+          <span class="pill" id="closedPill" data-tip="How many of your 10 slots are committed.">0 / 10</span>
         </span>
       </h2>
       <ul id="closed"></ul>
@@ -316,10 +323,10 @@
 
     <div class="col col-side">
     <section class="card" data-drop="backlog">
-      <h2 title="Everything you might do, captured but not committed to. Park ideas here freely; decide on them later.">Open backlog
+      <h2 data-tip="Everything you might do, captured but not committed to. Park ideas here freely; decide on them later.">Open backlog
         <span class="h2right">
-          <button class="ghost" id="dumpBtn" title="Brain-dump: type everything on your mind, one per line, without deciding.">Dump</button>
-          <button class="ghost" id="sortBtn" title="Go through backlog items one at a time and decide where each belongs.">Sort</button>
+          <button class="ghost" id="dumpBtn" data-tip="Brain-dump: type everything on your mind, one per line, without deciding.">Dump</button>
+          <button class="ghost" id="sortBtn" data-tip="Go through backlog items one at a time and decide where each belongs.">Sort</button>
           <span class="pill" id="openPill"></span>
         </span>
       </h2>
@@ -332,7 +339,7 @@
     </section>
 
     <section class="card" data-drop="failing">
-      <h2 title="Things you're deliberately choosing NOT to do right now. Naming them on purpose stops them nagging you in the background.">Failing at &mdash; on purpose <span class="pill" id="failPill"></span></h2>
+      <h2 data-tip="Things you're deliberately choosing NOT to do right now. Naming them on purpose stops them nagging you in the background.">Failing at &mdash; on purpose <span class="pill" id="failPill"></span></h2>
       <ul id="failing"></ul>
       <div class="addrow">
         <input type="text" id="failInput" placeholder="What will you let slide, guilt-free?" maxlength="120">
@@ -341,7 +348,7 @@
     </section>
 
     <section class="card" data-drop="done">
-      <h2 title="What you've finished — momentum you can see. Focus on what you've completed, not just what's left.">Done <span class="pill" id="donePill"></span></h2>
+      <h2 data-tip="What you've finished — momentum you can see. Focus on what you've completed, not just what's left.">Done <span class="pill" id="donePill"></span></h2>
       <div class="donesum" id="doneSum"></div>
       <div id="doneLog"></div>
     </section>
@@ -537,6 +544,30 @@ document.addEventListener("click", function(e){
 document.addEventListener("keydown", function(e){ if(e.key==="Escape") closeMove(); });
 window.addEventListener("scroll", closeMove, true);
 
+/* ---------- styled tooltips (match the app, not native title) ---------- */
+var tipShowT;
+function showTip(target){
+  var txt=target.getAttribute("data-tip"); if(!txt) return;
+  var tip=$("tip"); tip.textContent=txt; tip.style.display="block";
+  var r=target.getBoundingClientRect(); var tw=tip.offsetWidth||180, th=tip.offsetHeight||40;
+  var left=r.left + r.width/2 - tw/2;
+  if(left<8) left=8; if(left+tw>window.innerWidth-8) left=window.innerWidth-tw-8;
+  var top=r.bottom+8; if(top+th>window.innerHeight-8) top=r.top-th-8; if(top<8) top=8;
+  tip.style.left=left+"px"; tip.style.top=top+"px"; tip.classList.add("show");
+}
+function hideTip(){ clearTimeout(tipShowT); var tip=$("tip"); if(tip){ tip.classList.remove("show"); tip.style.display="none"; } }
+document.addEventListener("mouseover", function(e){
+  var t=e.target.closest ? e.target.closest("[data-tip]") : null; if(!t) return;
+  clearTimeout(tipShowT); tipShowT=setTimeout(function(){ showTip(t); }, 320);
+});
+document.addEventListener("mouseout", function(e){
+  var t=e.target.closest ? e.target.closest("[data-tip]") : null; if(!t) return;
+  if(e.relatedTarget && t.contains && t.contains(e.relatedTarget)) return;
+  hideTip();
+});
+window.addEventListener("scroll", hideTip, true);
+document.addEventListener("click", hideTip);
+
 /* ---------- edit text in place ---------- */
 function applyEdit(fromName, id, v){ var it=findItem(fromName,id); if(it){ it.text=v; save(); render(); } }
 function startEdit(span, applyFn){
@@ -552,7 +583,7 @@ function startEdit(span, applyFn){
   inp.addEventListener("dragstart", function(ev){ ev.preventDefault(); ev.stopPropagation(); });
 }
 function makeEditable(span, applyFn){
-  span.title="Double-click to edit"; span.style.cursor="text";
+  span.setAttribute("data-tip","Double-click to edit"); span.style.cursor="text";
   span.addEventListener("dblclick", function(e){ e.stopPropagation(); startEdit(span, applyFn); });
 }
 
@@ -730,7 +761,7 @@ function renderDots(){
   prevClosed=s.closed.length;
 }
 function moveBtn(fromName, id){
-  var mv=document.createElement("button"); mv.className="dotbtn"; mv.innerHTML="&#8943;"; mv.title="More";
+  var mv=document.createElement("button"); mv.className="dotbtn"; mv.innerHTML="&#8943;"; mv.setAttribute("data-tip","Edit or move this");
   mv.onclick=function(ev){ if(ev) ev.stopPropagation(); openMove(fromName, id, mv); };
   return mv;
 }
@@ -777,9 +808,9 @@ function renderProject(){
       var c=document.createElement("span"); c.className="chip";
       var label=document.createElement("span"); label.textContent=p.name;
       (function(pp){ makeEditable(label, function(v){ pp.name=v; save(); render(); }); })(p);
-      var mk=document.createElement("button"); mk.className="go"; mk.textContent="▶"; mk.title="Make active";
+      var mk=document.createElement("button"); mk.className="go"; mk.textContent="▶"; mk.setAttribute("data-tip","Make this the active project");
       mk.onclick=function(){ activate(i); };
-      var rm=document.createElement("button"); rm.textContent="✕"; rm.title="Remove";
+      var rm=document.createElement("button"); rm.textContent="✕"; rm.setAttribute("data-tip","Remove this parked project");
       rm.onclick=function(){ s.parked.splice(i,1); save(); render(); };
       c.append(label,mk,rm); pk.append(c);
     });
@@ -839,7 +870,7 @@ function listInto(id, arr, opt){
   arr.forEach(function(item){
     var li=document.createElement("li"); li.className="row-in"+(opt.failing?" failing":"");
     if(opt.check){
-      var b=document.createElement("div"); b.className="box"; b.title="Complete";
+      var b=document.createElement("div"); b.className="box"; b.setAttribute("data-tip","Mark done");
       b.onclick=function(){
         li.classList.add("done-anim");
         setTimeout(function(){
