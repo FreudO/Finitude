@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#11100e">
+<meta name="theme-color" content="#0b0b0d">
 <title>Finitude</title>
 <style>
   :root{
@@ -24,7 +24,7 @@
   .wrap{max-width:680px;margin:0 auto;padding:0 18px}
   @media(min-width:860px){ .wrap{max-width:980px} }
 
-  header{padding:40px 0 10px;text-align:center}
+  header{padding:40px 0 8px;text-align:center}
   h1{font-family:var(--serif);font-weight:600;font-size:2.5rem;margin:0;letter-spacing:-.01em}
   .sub{color:var(--muted);font-size:.95rem;margin:6px 0 0;font-family:var(--serif);font-style:italic}
 
@@ -37,34 +37,45 @@
     font-size:.8rem;text-decoration:underline;text-underline-offset:2px;padding:0;font-family:var(--sans)}
   .acct button:hover,.linkbtn:hover{color:var(--ink)}
 
-  .meter{margin:18px auto 4px;max-width:360px;text-align:center}
+  .meter{margin:16px auto 4px;max-width:380px;text-align:center}
   .dots{display:flex;gap:9px;justify-content:center;flex-wrap:wrap}
   .dot{width:18px;height:18px;border-radius:50%;border:1.6px solid var(--faint);
     transition:transform .25s cubic-bezier(.34,1.56,.64,1),background .2s,border-color .2s}
   .dot.fill{background:var(--accent);border-color:var(--accent)}
   .dot.pop{animation:pop .35s cubic-bezier(.34,1.56,.64,1)}
   @keyframes pop{0%{transform:scale(.4)}60%{transform:scale(1.25)}100%{transform:scale(1)}}
-  .meterlabel{margin-top:11px;font-size:.8rem;color:var(--muted);letter-spacing:.04em}
-  .meterlabel b{color:var(--ink);font-variant-numeric:tabular-nums}
-  .meterlabel.full b{color:var(--warn)}
+  .meterlabel{margin-top:12px;font-size:.84rem;color:var(--muted);letter-spacing:.02em}
+  .bignum{font-family:var(--serif);font-size:1.6rem;color:var(--ink);font-variant-numeric:tabular-nums;vertical-align:-3px;margin-right:3px}
+  .meterlabel.full .bignum{color:var(--warn)}
 
   main{display:grid;gap:18px;margin-top:14px;grid-template-columns:1fr;align-items:start}
   .col{display:grid;gap:18px;align-content:start}
   @media(min-width:860px){ main{grid-template-columns:1.35fr 1fr} }
+
   .card{background:var(--panel);border:1px solid var(--line);border-radius:18px;
     padding:20px 20px 16px;box-shadow:var(--shadow)}
   .card h2{font-size:.72rem;text-transform:uppercase;letter-spacing:.13em;
     color:var(--muted);margin:0 0 14px;font-weight:700;display:flex;
-    justify-content:space-between;align-items:center}
+    justify-content:space-between;align-items:center;gap:8px}
+  .h2right{display:flex;gap:8px;align-items:center}
   .pill{font-size:.7rem;letter-spacing:.04em;background:var(--bg2);color:var(--muted);
     border-radius:20px;padding:2px 9px;font-variant-numeric:tabular-nums}
   .pill.warn{color:var(--warn)}
+  .ghost{background:none;border:1px solid var(--line);color:var(--muted);border-radius:20px;
+    padding:3px 11px;font-size:.72rem;cursor:pointer;font-family:var(--sans);
+    text-transform:none;letter-spacing:normal;transition:.16s}
+  .ghost:hover{border-color:var(--gold);color:var(--gold)}
+  .cap{color:var(--muted);font-size:.86rem;font-style:italic;font-family:var(--serif);margin:-4px 0 10px}
+  .donesum{color:var(--done);font-size:.86rem;margin:-4px 0 10px}
 
   ul{list-style:none;margin:0;padding:0}
   li{display:flex;align-items:center;gap:13px;padding:11px 0;border-bottom:1px solid var(--line2)}
   li:last-child{border-bottom:none}
   li.row-in{animation:slidein .26s ease}
   @keyframes slidein{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+  li.done-anim{opacity:0;transform:translateX(10px);transition:opacity .2s,transform .2s}
+  li.done-anim .box{background:var(--done);border-color:var(--done)}
+  li.done-anim .box:after{transform:rotate(45deg) scale(1)}
   .box{flex:0 0 22px;height:22px;border:1.8px solid var(--faint);border-radius:7px;
     cursor:pointer;position:relative;transition:.18s}
   .box:hover{border-color:var(--accent);background:var(--bg2)}
@@ -123,25 +134,47 @@
   .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(90px);
     background:var(--accent);color:var(--panel);padding:13px 20px;border-radius:26px;
     font-size:.9rem;opacity:0;transition:.3s cubic-bezier(.34,1.4,.64,1);
-    max-width:88%;text-align:center;z-index:9;box-shadow:var(--shadow)}
+    max-width:88%;text-align:center;z-index:40;box-shadow:var(--shadow);font-weight:500}
   .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
 
-  footer{text-align:center;color:var(--faint);font-size:.78rem;margin-top:26px;font-family:var(--serif);font-style:italic}
+  footer{text-align:center;color:var(--faint);margin-top:30px;font-family:var(--serif)}
+  .fline{display:block;font-style:italic;font-size:.95rem;color:var(--muted)}
+  .fattr{display:block;font-size:.72rem;opacity:.7;margin-top:4px}
 
-  .gate{position:fixed;inset:0;background:radial-gradient(1200px 600px at 50% -10%,var(--bg2),var(--bg));
-    display:flex;align-items:center;justify-content:center;padding:24px;z-index:20}
-  .gate.hidden{display:none}
+  /* overlays */
+  .gate,.modal,.focus{position:fixed;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;padding:24px}
+  .gate{background:radial-gradient(1200px 600px at 50% -10%,var(--bg2),var(--bg))}
+  .modal,.focus{background:rgba(8,8,10,.93)}
+  .gate.hidden,.modal.hidden,.focus.hidden{display:none}
+
   .gatecard{max-width:380px;width:100%;text-align:center}
   .gatecard h1{margin-bottom:4px}
   .gatecard p{color:var(--muted);font-family:var(--serif);font-style:italic;margin:0 0 22px}
   .gateform{display:flex;flex-direction:column;gap:10px}
   .gatebtn{background:var(--accent);color:var(--panel);border:none;border-radius:12px;
-    padding:13px;font-size:1rem;cursor:pointer;font-family:var(--sans);transition:.16s}
+    padding:13px 18px;font-size:1rem;cursor:pointer;font-family:var(--sans);transition:.16s}
   .gatebtn:hover{opacity:.88}
   .gatemsg{font-size:.86rem;color:var(--muted);min-height:20px;margin-top:4px}
   .gatemsg.ok{color:var(--done)} .gatemsg.err{color:var(--warn)}
   .gatefoot{margin-top:18px}
   .sepdot{color:var(--faint);margin:0 7px}
+
+  .modalcard{max-width:460px;width:100%;background:var(--panel);border:1px solid var(--line);
+    border-radius:18px;padding:26px 24px;box-shadow:var(--shadow)}
+  .rtitle{font-family:var(--serif);font-size:1.7rem;margin:0 0 4px;font-weight:600}
+  .rsub{color:var(--muted);margin:0 0 16px;font-size:.92rem}
+  .rrow{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--line2)}
+  .rrow:last-of-type{border-bottom:none}
+  .rtxt{flex:1}
+  .rrow.drop .rtxt{color:var(--faint);text-decoration:line-through}
+  #ritualStart{margin-top:20px;width:100%}
+
+  .focusinner{text-align:center;max-width:640px;width:100%}
+  .focuslabel{color:var(--gold);letter-spacing:.22em;text-transform:uppercase;font-size:.78rem;margin-bottom:20px}
+  .focustext{font-family:var(--serif);font-size:2.2rem;line-height:1.25;margin-bottom:32px}
+  .focusactions{display:flex;gap:18px;align-items:center;justify-content:center;flex-wrap:wrap}
+  #focusDone{padding-left:30px;padding-right:30px}
+  .focusmeta{margin-top:24px;color:var(--muted);font-size:.85rem}
 </style>
 </head>
 <body>
@@ -164,6 +197,27 @@
   </div>
 </div>
 
+<div class="modal hidden" id="ritual">
+  <div class="modalcard">
+    <h2 class="rtitle" id="ritualTitle">Good morning</h2>
+    <p class="rsub" id="ritualSub"></p>
+    <div id="ritualList"></div>
+    <button class="gatebtn" id="ritualStart">Start the day</button>
+  </div>
+</div>
+
+<div class="focus hidden" id="focus">
+  <div class="focusinner">
+    <div class="focuslabel">Now</div>
+    <div class="focustext" id="focusText"></div>
+    <div class="focusactions">
+      <button class="gatebtn" id="focusDone">Mark done</button>
+      <button class="linkbtn" id="focusExit">Exit focus</button>
+    </div>
+    <div class="focusmeta" id="focusMeta"></div>
+  </div>
+</div>
+
 <div class="wrap">
   <header>
     <h1>Finitude</h1>
@@ -172,7 +226,7 @@
   <div class="acct" id="acct"></div>
   <div class="meter">
     <div class="dots" id="dots"></div>
-    <div class="meterlabel" id="meterLabel"><b>0</b> of 10 committed today</div>
+    <div class="meterlabel" id="meterLabel"></div>
   </div>
 
   <main>
@@ -188,7 +242,12 @@
     </section>
 
     <section class="card">
-      <h2>Today &mdash; closed list <span class="pill" id="closedPill">0 / 10</span></h2>
+      <h2>Today &mdash; closed list
+        <span class="h2right">
+          <button class="ghost" id="focusBtn">&#9654; Focus</button>
+          <span class="pill" id="closedPill">0 / 10</span>
+        </span>
+      </h2>
       <ul id="closed"></ul>
       <div class="addrow">
         <input type="text" id="closedInput" placeholder="Commit to one thing..." maxlength="120">
@@ -200,6 +259,7 @@
     <div class="col col-side">
     <section class="card">
       <h2>Open backlog <span class="pill" id="openPill"></span></h2>
+      <div class="cap" id="notDoing"></div>
       <ul id="open"></ul>
       <div class="addrow">
         <input type="text" id="openInput" placeholder="Capture, don't commit..." maxlength="120">
@@ -218,21 +278,20 @@
 
     <section class="card">
       <h2>Done <span class="pill" id="donePill"></span></h2>
+      <div class="donesum" id="doneSum"></div>
       <div id="doneLog"></div>
     </section>
     </div>
   </main>
 
-  <footer>After Oliver Burkeman, <i>Four Thousand Weeks</i></footer>
+  <footer id="footer"></footer>
 </div>
 <div class="toast" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 /* ============================================================
-   CONFIG — paste your Supabase keys here to enable cross-device
-   sync. Leave blank to run local-only (this one browser).
-   Find them in Supabase > Project Settings > API.
+   CONFIG — Supabase keys (safe to ship; anon/publishable only).
    ============================================================ */
 var CONFIG = {
   SUPABASE_URL:      "https://lpyxmsrcautpjkzsobtv.supabase.co",
@@ -241,7 +300,15 @@ var CONFIG = {
 
 var CAP = 10;
 var BASEKEY = "finitude.v1";
-var blank = {closed:[], open:[], failing:[], done:[], project:null, parked:[]};
+
+var FOOT = [
+  "You can attend to a few things, or to everything badly.",
+  "Finitude is what makes any choice mean something.",
+  "The list will outlive you. Choose today on purpose.",
+  "Doing less isn't failure — it's the whole point.",
+  "Ten things is plenty, if you actually finish them.",
+  "What you skip is as deliberate as what you keep."
+];
 
 var sb = null;
 if (CONFIG.SUPABASE_URL && CONFIG.SUPABASE_ANON_KEY &&
@@ -262,7 +329,8 @@ function normalize(o){
     failing: Array.isArray(o.failing) ? o.failing : [],
     done:    Array.isArray(o.done)    ? o.done    : [],
     project: o.project || null,
-    parked:  Array.isArray(o.parked)  ? o.parked  : []
+    parked:  Array.isArray(o.parked)  ? o.parked  : [],
+    lastDay: typeof o.lastDay === "string" ? o.lastDay : null
   };
 }
 function loadLocal(){
@@ -273,13 +341,15 @@ var s = loadLocal();
 
 function $(id){ return document.getElementById(id); }
 function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,6); }
+function todayStr(){ return new Date().toDateString(); }
+function sameDay(ts, dStr){ return new Date(ts).toDateString() === dStr; }
 function saveLocal(){ try{ localStorage.setItem(cacheKey(), JSON.stringify(s)); }catch(e){} }
 function save(){ saveLocal(); if(sb && user) schedulePush(); }
 
 var toastT;
 function toast(msg){
   var t=$("toast"); if(!t) return; t.textContent=msg; t.classList.add("show");
-  clearTimeout(toastT); toastT=setTimeout(function(){ t.classList.remove("show"); },2600);
+  clearTimeout(toastT); toastT=setTimeout(function(){ t.classList.remove("show"); },2800);
 }
 
 /* ---------- sync ---------- */
@@ -296,10 +366,10 @@ function pullRemote(){
   setStatus("Loading…");
   sb.from("boards").select("data").eq("user_id", user.id).maybeSingle()
     .then(function(r){
-      if(r && r.error){ setStatus("Sync error"); render(); return; }
+      if(r && r.error){ setStatus("Sync error"); render(); checkDay(); return; }
       var d = r && r.data && r.data.data;
-      if(d && Object.keys(d).length){ s = normalize(d); setStatus("Synced"); render(); }
-      else { render(); pushRemote(); }   // first time: migrate local up
+      if(d && Object.keys(d).length){ s = normalize(d); setStatus("Synced"); render(); checkDay(); }
+      else { render(); checkDay(); pushRemote(); }
     });
 }
 
@@ -325,7 +395,72 @@ function renderAccount(){
   }
 }
 function onLogin(u){ user=u; s=loadLocal(); hideGate(); renderAccount(); pullRemote(); }
-function onLogout(){ user=null; s=loadLocal(); renderAccount(); render(); showGate(); }
+function onLogout(){ user=null; s=loadLocal(); renderAccount(); render(); checkDay(); showGate(); }
+
+/* ---------- morning re-commit ritual ---------- */
+var dropSet = {};
+function checkDay(){
+  var today=todayStr();
+  if(!s.lastDay){ s.lastDay=today; save(); return; }
+  if(s.lastDay!==today){
+    if(s.closed.length>0){ showRitual(s.lastDay); }
+    else { s.lastDay=today; save(); }
+  }
+}
+function showRitual(prevDay){
+  var finished = s.done.filter(function(d){ return sameDay(d.ts, prevDay); }).length;
+  dropSet = {};
+  $("ritualSub").textContent =
+    "Yesterday you finished " + finished + ". " +
+    s.closed.length + " thing" + (s.closed.length===1?"":"s") +
+    " carried over — keep each for today, or drop it back to the backlog.";
+  var L=$("ritualList"); L.innerHTML="";
+  s.closed.forEach(function(it){
+    var row=document.createElement("div"); row.className="rrow";
+    var t=document.createElement("span"); t.className="rtxt"; t.textContent=it.text;
+    var btn=document.createElement("button"); btn.className="act"; btn.textContent="Keep";
+    btn.onclick=function(){
+      if(dropSet[it.id]){ delete dropSet[it.id]; btn.textContent="Keep"; row.classList.remove("drop"); }
+      else { dropSet[it.id]=1; btn.textContent="Drop"; row.classList.add("drop"); }
+    };
+    row.append(t, btn); L.append(row);
+  });
+  $("ritual").classList.remove("hidden");
+}
+function startDay(){
+  var keep=[];
+  s.closed.forEach(function(it){
+    if(dropSet[it.id]) s.open.push(it); else keep.push(it);
+  });
+  s.closed=keep;
+  s.lastDay=todayStr();
+  save();
+  $("ritual").classList.add("hidden");
+  render();
+}
+
+/* ---------- focus mode ---------- */
+function enterFocus(){
+  if(!s.closed.length){ toast("Commit to something first."); return; }
+  renderFocus(); $("focus").classList.remove("hidden");
+}
+function exitFocus(){ $("focus").classList.add("hidden"); }
+function renderFocus(){
+  if(!s.closed.length){ exitFocus(); return; }
+  $("focusText").textContent = s.closed[0].text;
+  var left = s.closed.length - 1;
+  $("focusMeta").textContent = s.closed.length + " committed · " +
+    (left>0 ? left + " after this" : "last one");
+}
+function focusDone(){
+  if(!s.closed.length) return;
+  var it=s.closed[0];
+  logDone(it.text);
+  s.closed = s.closed.filter(function(x){ return x.id!==it.id; });
+  save(); render();
+  if(s.closed.length){ renderFocus(); }
+  else { exitFocus(); toast("Closed list clear. Rest, or recommit."); }
+}
 
 /* ---------- render ---------- */
 var prevClosed = s.closed.length;
@@ -345,8 +480,10 @@ function renderDots(){
     d.append(el);
   }
   var lbl=$("meterLabel");
-  if(lbl){ lbl.innerHTML="<b>"+s.closed.length+"</b> of "+CAP+" committed today";
-    lbl.classList.toggle("full", s.closed.length>=CAP); }
+  if(lbl){
+    lbl.innerHTML='<span class="bignum">'+s.closed.length+'</span>of '+CAP+' committed today';
+    lbl.classList.toggle("full", s.closed.length>=CAP);
+  }
   prevClosed=s.closed.length;
 }
 function render(){
@@ -382,12 +519,21 @@ function render(){
   listInto("closed", s.closed, {check:true, list:"closed"});
 
   var op=$("openPill"); if(op) op.textContent = s.open.length ? s.open.length : "";
+  var nd=$("notDoing");
+  if(nd) nd.textContent = s.open.length>0
+    ? (s.open.length + " thing" + (s.open.length===1?"":"s") + " you're choosing not to do today")
+    : "";
   listInto("open", s.open, {promote:true, list:"open"});
 
   var fp=$("failPill"); if(fp) fp.textContent = s.failing.length ? s.failing.length : "";
   listInto("failing", s.failing, {list:"failing", failing:true});
 
   var dp=$("donePill"); if(dp) dp.textContent = s.done.length ? s.done.length : "";
+  var ds=$("doneSum");
+  if(ds){
+    var ft=s.done.filter(function(d){ return sameDay(d.ts, todayStr()); }).length;
+    ds.textContent = ft>0 ? ("You've finished "+ft+" today — that's enough.") : "";
+  }
   var dl=$("doneLog");
   if(dl){ dl.innerHTML="";
     if(!s.done.length){ dl.innerHTML='<div class="empty">Nothing yet. Finish something small.</div>'; }
@@ -416,7 +562,13 @@ function listInto(id, arr, opt){
     var li=document.createElement("li"); li.className="row-in"+(opt.failing?" failing":"");
     if(opt.check){
       var b=document.createElement("div"); b.className="box"; b.title="Complete";
-      b.onclick=function(){ logDone(item.text); remove(opt.list,item.id); render(); };
+      b.onclick=function(){
+        li.classList.add("done-anim");
+        setTimeout(function(){
+          logDone(item.text); remove(opt.list,item.id); render();
+          if(opt.list==="closed" && s.closed.length===0){ toast("Closed list clear. Rest, or recommit."); }
+        }, 200);
+      };
       li.append(b);
     }
     if(opt.failing){ var dash=document.createElement("span"); dash.className="dash"; dash.textContent="—"; li.append(dash); }
@@ -464,6 +616,12 @@ bind("projInput","projAdd",function(v){
   $("projInput").value=""; save(); render();
 });
 
+/* feature wiring */
+if($("focusBtn")) $("focusBtn").onclick=enterFocus;
+if($("focusDone")) $("focusDone").onclick=focusDone;
+if($("focusExit")) $("focusExit").onclick=exitFocus;
+if($("ritualStart")) $("ritualStart").onclick=startDay;
+
 /* ---------- gate handlers (email + password) ---------- */
 var authMode = "signin";
 (function(){
@@ -493,31 +651,32 @@ var authMode = "signin";
         setMode("signin");
         setMsg("ok","Account created. Check your email to confirm, then sign in.");
       }
-      /* otherwise onAuthStateChange handles the signed-in state */
     });
   }
   if(go) go.onclick=submit;
   if(pass) pass.addEventListener("keydown", function(e){ if(e.key==="Enter") submit(); });
   if(email) email.addEventListener("keydown", function(e){ if(e.key==="Enter") submit(); });
   if(toggle) toggle.onclick=function(){ setMode(authMode==="signin" ? "signup" : "signin"); };
-  if(skip) skip.onclick=function(){ hideGate(); renderAccount(); render(); };
+  if(skip) skip.onclick=function(){ hideGate(); renderAccount(); render(); checkDay(); };
 })();
 
 /* ---------- boot ---------- */
+function bootFooter(){ var f=$("footer"); if(f) f.innerHTML='<span class="fline">'+FOOT[Math.floor(Math.random()*FOOT.length)]+'</span><span class="fattr">in the spirit of Four Thousand Weeks</span>'; }
 function start(){
+  bootFooter();
   renderAccount();
   if(sb){
     sb.auth.getSession().then(function(r){
       var session = r && r.data && r.data.session;
       if(session && session.user){ onLogin(session.user); }
-      else { render(); showGate(); }
+      else { render(); checkDay(); showGate(); }
     });
     sb.auth.onAuthStateChange(function(ev, session){
       if(session && session.user){ if(!user || user.id!==session.user.id) onLogin(session.user); }
       else { onLogout(); }
     });
   } else {
-    render();
+    render(); checkDay();
   }
 }
 start();
