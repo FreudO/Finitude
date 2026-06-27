@@ -92,6 +92,15 @@
   .dotbtn{background:none;border:none;color:var(--faint);cursor:pointer;font-size:1.15rem;
     line-height:1;padding:0 6px;transition:.16s}
   .dotbtn:hover{color:var(--gold)}
+  li[draggable="true"],.done-li[draggable="true"]{cursor:grab}
+  li.dragging,.done-li.dragging{opacity:.4;cursor:grabbing}
+  .card.drop-hover{outline:2px dashed var(--gold);outline-offset:3px}
+  #trash{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(80px);
+    background:var(--panel);border:1.5px dashed var(--warn);color:var(--warn);
+    padding:12px 22px;border-radius:26px;font-size:.9rem;z-index:45;opacity:0;
+    pointer-events:none;transition:.25s;box-shadow:var(--shadow)}
+  #trash.show{transform:translateX(-50%) translateY(0);opacity:1;pointer-events:auto}
+  #trash.on{background:var(--warn);color:var(--panel);border-style:solid}
 
   .addrow{display:flex;gap:9px;margin-top:14px}
   input[type=text],input[type=email],input[type=password]{flex:1;width:100%;background:var(--bg2);border:1px solid var(--line);
@@ -272,7 +281,7 @@
 
   <main>
     <div class="col col-main">
-    <section class="card hero">
+    <section class="card hero" data-drop="project">
       <h2>The one project <span class="pill" id="parkPill"></span></h2>
       <div class="project" id="projWrap"></div>
       <div id="projSteps"></div>
@@ -287,7 +296,7 @@
       </div>
     </section>
 
-    <section class="card">
+    <section class="card" data-drop="today">
       <h2>Today &mdash; closed list
         <span class="h2right">
           <button class="ghost" id="focusBtn">&#9654; Focus</button>
@@ -303,7 +312,7 @@
     </div>
 
     <div class="col col-side">
-    <section class="card">
+    <section class="card" data-drop="backlog">
       <h2>Open backlog
         <span class="h2right">
           <button class="ghost" id="dumpBtn">Dump</button>
@@ -319,7 +328,7 @@
       </div>
     </section>
 
-    <section class="card">
+    <section class="card" data-drop="failing">
       <h2>Failing at &mdash; on purpose <span class="pill" id="failPill"></span></h2>
       <ul id="failing"></ul>
       <div class="addrow">
@@ -328,7 +337,7 @@
       </div>
     </section>
 
-    <section class="card">
+    <section class="card" data-drop="done">
       <h2>Done <span class="pill" id="donePill"></span></h2>
       <div class="donesum" id="doneSum"></div>
       <div id="doneLog"></div>
@@ -338,6 +347,7 @@
 
   <footer id="footer"></footer>
 </div>
+<div id="trash">Drop here to delete</div>
 <div class="toast" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -504,6 +514,48 @@ function openMove(fromName, id){
 }
 function closeMove(){ $("move").classList.add("hidden"); }
 
+/* ---------- drag & drop (desktop; menu stays for touch) ---------- */
+var dragData = null;
+var DEST_TO_LIST = { today:"closed", backlog:"open", failing:"failing", done:"done", project:"pstep" };
+function handleDrop(dest){
+  if(!dragData) return false;
+  if(DEST_TO_LIST[dest] === dragData.from) return false; /* same box: no-op (no reorder) */
+  var ok = moveItem(dragData.from, dragData.id, dest);
+  if(ok) render();
+  return ok;
+}
+function makeDraggable(el, from, id){
+  el.setAttribute("draggable","true");
+  el.addEventListener("dragstart", function(e){
+    dragData={from:from,id:id}; el.classList.add("dragging");
+    var tr=$("trash"); if(tr) tr.classList.add("show");
+    if(e.dataTransfer){ e.dataTransfer.effectAllowed="move"; try{ e.dataTransfer.setData("text/plain", id); }catch(_){} }
+  });
+  el.addEventListener("dragend", function(){
+    el.classList.remove("dragging");
+    var tr=$("trash"); if(tr){ tr.classList.remove("show"); tr.classList.remove("on"); }
+    var hs=document.querySelectorAll(".drop-hover"); for(var i=0;i<hs.length;i++) hs[i].classList.remove("drop-hover");
+    dragData=null;
+  });
+}
+function wireDrops(){
+  var zones=document.querySelectorAll("[data-drop]");
+  for(var i=0;i<zones.length;i++){
+    (function(el){
+      var dest=el.getAttribute("data-drop");
+      el.addEventListener("dragover", function(e){ e.preventDefault(); if(DEST_TO_LIST[dest]!==(dragData&&dragData.from)) el.classList.add("drop-hover"); });
+      el.addEventListener("dragleave", function(){ el.classList.remove("drop-hover"); });
+      el.addEventListener("drop", function(e){ e.preventDefault(); el.classList.remove("drop-hover"); handleDrop(dest); });
+    })(zones[i]);
+  }
+  var tr=$("trash");
+  if(tr){
+    tr.addEventListener("dragover", function(e){ e.preventDefault(); tr.classList.add("on"); });
+    tr.addEventListener("dragleave", function(){ tr.classList.remove("on"); });
+    tr.addEventListener("drop", function(e){ e.preventDefault(); tr.classList.remove("on"); handleDrop("delete"); });
+  }
+}
+
 /* ---------- brain dump ---------- */
 function openDump(){ $("dumpText").value=""; $("dump").classList.remove("hidden"); }
 function submitDump(){
@@ -664,7 +716,7 @@ function renderProject(){
         var pull=document.createElement("button"); pull.className="act"; pull.textContent="→ Today";
         pull.onclick=function(){ if(moveItem('pstep', st.id, 'today')){ render(); } };
         mini.append(pull, moveBtn('pstep', st.id));
-        li.append(t,mini); ul.append(li);
+        li.append(t,mini); makeDraggable(li,'pstep',st.id); ul.append(li);
       });
       sbx.append(ul);
     }
@@ -724,7 +776,7 @@ function render(){
         var tk=document.createElement("span"); tk.className="tick"; tk.textContent="✓";
         var t=document.createElement("span"); t.className="txt"; t.textContent=d.text;
         var mini=document.createElement("div"); mini.className="mini"; mini.append(moveBtn('done', d.id));
-        row.append(tk,t,mini); dl.append(row);
+        row.append(tk,t,mini); makeDraggable(row,'done',d.id); dl.append(row);
       });
     }
   }
@@ -759,7 +811,7 @@ function listInto(id, arr, opt){
       q.onclick=function(){ if(moveItem('open',item.id,'today')) render(); }; mini.append(q);
     }
     mini.append(moveBtn(opt.list, item.id));
-    li.append(mini); ul.append(li);
+    li.append(mini); makeDraggable(li, opt.list, item.id); ul.append(li);
   });
 }
 function logDoneText(text){ s.done.push({id:uid(),text:text,ts:Date.now()}); }
@@ -847,6 +899,7 @@ var authMode = "signin";
 function bootFooter(){ var f=$("footer"); if(f) f.innerHTML='<span class="fline">'+FOOT[Math.floor(Math.random()*FOOT.length)]+'</span><span class="fattr">in the spirit of Four Thousand Weeks</span>'; }
 function start(){
   bootFooter();
+  wireDrops();
   renderAccount();
   if(sb){
     sb.auth.getSession().then(function(r){
