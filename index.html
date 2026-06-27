@@ -83,8 +83,13 @@
   input[type=text],input[type=email],input[type=password]{flex:1;width:100%;background:var(--bg2);border:1px solid var(--line);
     border-radius:12px;padding:12px 14px;color:var(--ink);font-size:.97rem;
     outline:none;font-family:var(--sans);transition:.16s}
-  input::placeholder{color:var(--faint)}
+  input{color:var(--ink);caret-color:var(--gold)}
+  input::placeholder{color:var(--muted);opacity:1}
   input:focus{border-color:var(--gold);background:var(--panel);box-shadow:0 0 0 3px rgba(232,178,76,.15)}
+  input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus{
+    -webkit-text-fill-color:var(--ink);
+    -webkit-box-shadow:0 0 0 1000px var(--bg2) inset;
+    caret-color:var(--ink);transition:background-color 9999s ease-in-out 0s}
   .add{background:var(--accent);color:var(--panel);border:none;border-radius:12px;
     width:46px;font-size:1.4rem;cursor:pointer;transition:.16s;flex:0 0 auto}
   .add:hover{opacity:.88}
@@ -173,7 +178,7 @@
       <div class="project" id="projWrap"></div>
       <div class="parked" id="parked"></div>
       <div class="addrow">
-        <input type="text" id="projInput" placeholder="Park a future project..." maxlength="80">
+        <input type="text" id="projInput" placeholder="Name a project to focus on..." maxlength="80">
         <button class="add" id="projAdd" aria-label="Add project">+</button>
       </div>
     </section>
@@ -182,7 +187,7 @@
       <h2>Today &mdash; closed list <span class="pill" id="closedPill">0 / 10</span></h2>
       <ul id="closed"></ul>
       <div class="addrow">
-        <input type="text" id="closedInput" placeholder="Commit to one thing..." maxlength="120">
+        <input type="text" id="closedInput" placeholder="Commit to one thing for today..." maxlength="120">
         <button class="add" id="closedAdd" aria-label="Add to closed list">+</button>
       </div>
     </section>
@@ -191,7 +196,7 @@
       <h2>Open backlog <span class="pill" id="openPill"></span></h2>
       <ul id="open"></ul>
       <div class="addrow">
-        <input type="text" id="openInput" placeholder="Capture, don't commit..." maxlength="120">
+        <input type="text" id="openInput" placeholder="Capture an idea — don't commit yet..." maxlength="120">
         <button class="add" id="openAdd" aria-label="Add to backlog">+</button>
       </div>
     </section>
@@ -310,10 +315,6 @@ function renderAccount(){
     var s1=document.createElement("span"); s1.textContent="Local only ·";
     var b=document.createElement("button"); b.textContent="Sign in to sync";
     b.onclick=showGate; a.append(s1, document.createTextNode(" "), b);
-  } else {
-    var s2=document.createElement("span");
-    s2.textContent="Local only — add Supabase keys in the file to sync across devices";
-    a.append(s2);
   }
 }
 function onLogin(u){ user=u; s=loadLocal(); hideGate(); renderAccount(); pullRemote(); }
@@ -370,7 +371,7 @@ function render(){
   var cp=$("closedPill");
   if(cp){ cp.textContent=s.closed.length+" / "+CAP; cp.classList.toggle("warn", s.closed.length>=CAP); }
   var ca=$("closedAdd"); if(ca) ca.disabled = s.closed.length>=CAP;
-  var ci=$("closedInput"); if(ci) ci.placeholder = s.closed.length>=CAP ? "Full. Finish or drop one first." : "Commit to one thing...";
+  var ci=$("closedInput"); if(ci) ci.placeholder = s.closed.length>=CAP ? "Full. Finish or drop one first." : "Commit to one thing for today...";
   listInto("closed", s.closed, {check:true, list:"closed"});
 
   var op=$("openPill"); if(op) op.textContent = s.open.length ? s.open.length : "";
